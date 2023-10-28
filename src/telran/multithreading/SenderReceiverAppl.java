@@ -9,11 +9,12 @@ public class SenderReceiverAppl {
 	private static final int N_RECEIVERS = 10;	
 	
 	public static void main(String[] args) throws InterruptedException {
-		MessageBox messageBox = new MessageBox();
-		Sender sender = new Sender(messageBox, N_MESSAGES);
+		MessageBox messageBoxOdd = new MessageBox();
+		MessageBox messageBoxEven = new MessageBox();
+		Sender sender = new Sender(messageBoxEven, messageBoxOdd,N_MESSAGES);
 		sender.start();
 		Receiver[] receivers = new Receiver[N_RECEIVERS];
-		startReceivers(messageBox, receivers);
+		startReceivers(messageBoxEven, messageBoxOdd);
 		sender.join();
 		stopReceivers(receivers);
 	}
@@ -24,10 +25,13 @@ public class SenderReceiverAppl {
 		}
 	}
 
-	private static void startReceivers(MessageBox messageBox, Receiver[] receivers) {
+	private static void startReceivers(MessageBox messageBoxEven, MessageBox messageBoxOdd) {
+		
 		for(int i = 0; i < N_RECEIVERS; i++) {
-			receivers[i] = new Receiver(messageBox);
-			receivers[i].start();
+			Receiver receiver = new Receiver();
+			MessageBox message = receiver.getId() % 2 == 0 ? messageBoxEven : messageBoxOdd;
+			receiver.setMessageBox(message);
+			receiver.start();
 		}
 	}
 }
